@@ -307,39 +307,28 @@ function logMessage($message) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Загрузка Excel файла</title>
-    <style>
-        #progress {
-            width: 100%;
-            background-color: #f3f3f3;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            overflow: hidden;
-        }
-        #progress-bar {
-            height: 30px;
-            width: 0;
-            background-color: #4caf50;
-            text-align: center;
-            line-height: 30px;
-            color: white;
-        }
-        #download-link {
-            display: none;
-            margin-top: 20px;
-        }
-    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-    <h1>Загрузите Excel файл</h1>
-    <form id="upload-form" method="post" enctype="multipart/form-data">
-        <input type="file" name="file" required>
-        <button type="submit">Загрузить</button>
-    </form>
-    <div id="progress">
-        <div id="progress-bar">0%</div>
+<body class="bg-light">
+    <div class="container py-5">
+        <h1 class="text-center mb-4">Загрузите Excel файл</h1>
+        <form id="upload-form" method="post" enctype="multipart/form-data" class="card p-4 shadow-sm">
+            <div class="mb-3">
+                <label for="file" class="form-label">Выберите файл</label>
+                <input type="file" name="file" id="file" class="form-control" required>
+            </div>
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary">Загрузить</button>
+            </div>
+        </form>
+
+        <div class="progress mt-4">
+            <div id="progress-bar" class="progress-bar" role="progressbar" style="width: 0%">0%</div>
+        </div>
+
+        <div id="logs" class="mt-4"></div>
+        <a id="download-link" href="#" download class="btn btn-success mt-4 d-none">Скачать архив</a>
     </div>
-    <div id="logs"></div>
-    <a id="download-link" href="#" download>Скачать архив</a>
 
     <script>
     const form = document.getElementById('upload-form');
@@ -351,7 +340,7 @@ function logMessage($message) {
         event.preventDefault();
         const formData = new FormData(form);
         const xhr = new XMLHttpRequest();
-        xhr.open('POST', form .action, true);
+        xhr.open('POST', form.action, true);
 
         xhr.upload.addEventListener('progress', function(e) {
             if (e.lengthComputable) {
@@ -364,16 +353,15 @@ function logMessage($message) {
         xhr.onload = function() {
             if (xhr.status === 200) {
                 const response = JSON.parse(xhr.responseText);
-                console.log(response); ь
                 if (response.status === 'error') {
-                    logsDiv.innerHTML += '<p style="color:red;">' + response.message + '</p>';
+                    logsDiv.innerHTML += `<p class="text-danger">${response.message}</p>`;
                 } else {
-                    logsDiv.innerHTML += '<p style="color:green;">' + response.message + '</p>';
+                    logsDiv.innerHTML += `<p class="text-success">${response.message}</p>`;
                     downloadLink.href = 'output/' + response.download_link;
-                    downloadLink.style.display = 'block'; 
+                    downloadLink.classList.remove('d-none');
                 }
             } else {
-                logsDiv.innerHTML += '<p style="color:red;">Ошибка загрузки файла.</p>';
+                logsDiv.innerHTML += '<p class="text-danger">Ошибка загрузки файла.</p>';
             }
         };
 
